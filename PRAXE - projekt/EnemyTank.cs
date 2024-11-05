@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace PRAXE___projekt
 {
@@ -14,7 +16,7 @@ namespace PRAXE___projekt
         private Texture2D _bodyTexture;
         private Texture2D _barrelTexture;
         private Texture2D _bulletTexture;
-        private Texture2D _explosionTexture; 
+        private Texture2D _explosionTexture;
         private List<Bullet> _bullets;
         private float _shootInterval;
         private float _timeSinceLastShot;
@@ -55,7 +57,7 @@ namespace PRAXE___projekt
                 if (_explosionTimer >= 3f)
                 {
                     _isExploding = false;
-                    IsDestroyed = true;
+                    IsDestroyed = true; // Označte tank jako zničený po výbuchu
                 }
                 return;
             }
@@ -120,6 +122,8 @@ namespace PRAXE___projekt
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            if (IsDestroyed) return; // Zabrání vykreslování, pokud je tank zničený
+
             if (_isExploding)
             {
                 spriteBatch.Draw(
@@ -135,8 +139,6 @@ namespace PRAXE___projekt
                 );
                 return;
             }
-
-            if (IsDestroyed) return;
 
             Vector2 tankCenter = Position + new Vector2(_bodyTexture.Width / 2, _bodyTexture.Height / 2);
 

@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
 
 namespace PRAXE___projekt
 {
@@ -23,6 +22,7 @@ namespace PRAXE___projekt
         private float _bulletSpeed = 200f;
         private EnemyTank _enemyTank;
         private Song _backgroundMusic;
+        private Texture2D _backgroundTexture;
 
         public Game1()
         {
@@ -61,6 +61,7 @@ namespace PRAXE___projekt
 
             _enemyTank.LoadContent(GraphicsDevice, _tankBodyTexture, _tankBarrelTexture, _bulletTexture, _explosionTexture);
 
+            _backgroundTexture = Content.Load<Texture2D>("background");
 
             _backgroundMusic = Content.Load<Song>("Soldier of Heaven");
             MediaPlayer.IsRepeating = true;
@@ -83,9 +84,25 @@ namespace PRAXE___projekt
 
             Vector2 movementDirection = new Vector2((float)Math.Cos(_rotationAngle), (float)Math.Sin(_rotationAngle));
             if (keyboardState.IsKeyDown(Keys.W))
-                _tankPosition += movementDirection * _tankSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            {
+                Vector2 newPosition = _tankPosition + movementDirection * _tankSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (newPosition.X >= 0 && newPosition.X + _tankBodyTexture.Width <= GraphicsDevice.Viewport.Width)
+                    _tankPosition.X = newPosition.X;
+
+                if (newPosition.Y >= 0 && newPosition.Y + _tankBodyTexture.Height <= GraphicsDevice.Viewport.Height)
+                    _tankPosition.Y = newPosition.Y;
+            }
             if (keyboardState.IsKeyDown(Keys.S))
-                _tankPosition -= movementDirection * _tankSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            {
+                Vector2 newPosition = _tankPosition - movementDirection * _tankSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (newPosition.X >= 0 && newPosition.X + _tankBodyTexture.Width <= GraphicsDevice.Viewport.Width)
+                    _tankPosition.X = newPosition.X;
+
+                if (newPosition.Y >= 0 && newPosition.Y + _tankBodyTexture.Height <= GraphicsDevice.Viewport.Height)
+                    _tankPosition.Y = newPosition.Y;
+            }
 
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
@@ -112,7 +129,7 @@ namespace PRAXE___projekt
             {
                 if (_enemyTank.Bounds.Contains(_bullets[i].Position))
                 {
-                    _enemyTank.TakeDamage(10);
+                    _enemyTank.TakeDamage(5);
                     _bullets.RemoveAt(i);
                 }
             }
@@ -120,10 +137,13 @@ namespace PRAXE___projekt
             base.Update(gameTime);
         }
 
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.White);
             _spriteBatch.Begin();
+
+            _spriteBatch.Draw(_backgroundTexture, Vector2.Zero, Color.White);
 
             Vector2 tankCenter = _tankPosition + new Vector2(_tankBodyTexture.Width / 2, _tankBodyTexture.Height / 2);
 
