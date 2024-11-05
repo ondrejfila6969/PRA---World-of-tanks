@@ -52,13 +52,13 @@ namespace PRAXE___projekt
 
             if (Position.Y <= 0)
             {
-                Position.Y = 0;  
-                _verticalDirection = 1; 
+                Position.Y = 0;
+                _verticalDirection = 1;
             }
             else if (Position.Y + _bodyTexture.Height >= _graphicsDevice.Viewport.Height)
             {
-                Position.Y = _graphicsDevice.Viewport.Height - _bodyTexture.Height;  
-                _verticalDirection = -1; 
+                Position.Y = _graphicsDevice.Viewport.Height - _bodyTexture.Height;
+                _verticalDirection = -1;
             }
 
             _timeSinceLastShot += (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -112,9 +112,9 @@ namespace PRAXE___projekt
                 _bodyTexture,
                 tankCenter,
                 null,
-                Color.Red, 
-                0f, 
-                new Vector2(_bodyTexture.Width / 2, _bodyTexture.Height / 2), 
+                Color.Red,
+                0f,
+                new Vector2(_bodyTexture.Width / 2, _bodyTexture.Height / 2),
                 1.0f,
                 SpriteEffects.None,
                 0f
@@ -126,13 +126,12 @@ namespace PRAXE___projekt
                 null,
                 Color.White,
                 (float)Math.PI,
-                new Vector2(0, _barrelTexture.Height / 2), 
+                new Vector2(0, _barrelTexture.Height / 2),
                 1.0f,
                 SpriteEffects.None,
                 0f
             );
 
-            // Vykreslení střel nepřátelského tanku
             foreach (var bullet in _bullets)
             {
                 spriteBatch.Draw(_bulletTexture, bullet.Position, Color.White);

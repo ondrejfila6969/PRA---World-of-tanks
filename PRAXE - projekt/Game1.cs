@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 
 namespace PRAXE___projekt
 {
@@ -10,19 +12,16 @@ namespace PRAXE___projekt
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
         private Vector2 _tankPosition;
         private float _tankSpeed = 100f;
-
         private Texture2D _tankBodyTexture;
         private Texture2D _tankBarrelTexture;
         private Texture2D _bulletTexture;
-
         private float _rotationAngle;
         private List<Bullet> _bullets = new List<Bullet>();
         private float _bulletSpeed = 200f;
-
         private EnemyTank _enemyTank;
+        private Song _backgroundMusic;
 
         public Game1()
         {
@@ -58,6 +57,11 @@ namespace PRAXE___projekt
             _bulletTexture.SetData(bulletData);
 
             _enemyTank.LoadContent(GraphicsDevice, _tankBodyTexture, _tankBarrelTexture, _bulletTexture);
+
+            _backgroundMusic = Content.Load<Song>("Soldier of Heaven");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Volume = 0.5f;
+            MediaPlayer.Play(_backgroundMusic);
         }
 
         protected override void Update(GameTime gameTime)
@@ -68,7 +72,6 @@ namespace PRAXE___projekt
             var keyboardState = Keyboard.GetState();
             var mouseState = Mouse.GetState();
 
-            // Rotace tanku pomocí kláves A a D
             if (keyboardState.IsKeyDown(Keys.A))
                 _rotationAngle -= 2f * (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (keyboardState.IsKeyDown(Keys.D))
@@ -144,7 +147,6 @@ namespace PRAXE___projekt
                 0f
             );
 
-            // Vykreslení všech střel
             foreach (var bullet in _bullets)
             {
                 _spriteBatch.Draw(_bulletTexture, bullet.Position, Color.White);
