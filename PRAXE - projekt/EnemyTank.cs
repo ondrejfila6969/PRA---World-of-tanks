@@ -14,11 +14,14 @@ namespace PRAXE___projekt
         private Texture2D _bodyTexture;
         private Texture2D _barrelTexture;
         private Texture2D _bulletTexture;
+        private Texture2D _explosionTexture; 
         private List<Bullet> _bullets;
         private float _shootInterval;
         private float _timeSinceLastShot;
         private int _verticalDirection = 1;
         private GraphicsDevice _graphicsDevice;
+        private float _explosionTimer = 0f;
+        private bool _isExploding = false;
 
         public bool IsDestroyed { get; private set; }
 
@@ -35,16 +38,28 @@ namespace PRAXE___projekt
 
         public Rectangle Bounds => new Rectangle((int)Position.X, (int)Position.Y, _bodyTexture.Width, _bodyTexture.Height);
 
-        public void LoadContent(GraphicsDevice graphicsDevice, Texture2D bodyTexture, Texture2D barrelTexture, Texture2D bulletTexture)
+        public void LoadContent(GraphicsDevice graphicsDevice, Texture2D bodyTexture, Texture2D barrelTexture, Texture2D bulletTexture, Texture2D explosionTexture)
         {
             _graphicsDevice = graphicsDevice;
             _bodyTexture = bodyTexture;
             _barrelTexture = barrelTexture;
             _bulletTexture = bulletTexture;
+            _explosionTexture = explosionTexture;
         }
 
         public void Update(GameTime gameTime)
         {
+            if (_isExploding)
+            {
+                _explosionTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (_explosionTimer >= 3f)
+                {
+                    _isExploding = false;
+                    IsDestroyed = true;
+                }
+                return;
+            }
+
             if (IsDestroyed)
                 return;
 
@@ -82,9 +97,10 @@ namespace PRAXE___projekt
         public void TakeDamage(int damage)
         {
             HP -= damage;
-            if (HP <= 0 && !IsDestroyed)
+            if (HP <= 0 && !_isExploding)
             {
-                IsDestroyed = true;
+                _isExploding = true;
+                _explosionTimer = 0f;
                 OnDespawn();
             }
         }
@@ -104,6 +120,22 @@ namespace PRAXE___projekt
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            if (_isExploding)
+            {
+                spriteBatch.Draw(
+                    _explosionTexture,
+                    Position,
+                    null,
+                    Color.White,
+                    0f,
+                    new Vector2(_explosionTexture.Width / 2, _explosionTexture.Height / 2),
+                    1.0f,
+                    SpriteEffects.None,
+                    0f
+                );
+                return;
+            }
+
             if (IsDestroyed) return;
 
             Vector2 tankCenter = Position + new Vector2(_bodyTexture.Width / 2, _bodyTexture.Height / 2);
@@ -137,6 +169,5 @@ namespace PRAXE___projekt
                 spriteBatch.Draw(_bulletTexture, bullet.Position, Color.White);
             }
         }
-
     }
 }

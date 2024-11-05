@@ -15,6 +15,7 @@ namespace PRAXE___projekt
         private Vector2 _tankPosition;
         private float _tankSpeed = 100f;
         private Texture2D _tankBodyTexture;
+        private Texture2D _explosionTexture;
         private Texture2D _tankBarrelTexture;
         private Texture2D _bulletTexture;
         private float _rotationAngle;
@@ -56,7 +57,10 @@ namespace PRAXE___projekt
             for (int i = 0; i < bulletData.Length; i++) bulletData[i] = Color.Black;
             _bulletTexture.SetData(bulletData);
 
-            _enemyTank.LoadContent(GraphicsDevice, _tankBodyTexture, _tankBarrelTexture, _bulletTexture);
+            _explosionTexture = Content.Load<Texture2D>("boom");
+
+            _enemyTank.LoadContent(GraphicsDevice, _tankBodyTexture, _tankBarrelTexture, _bulletTexture, _explosionTexture);
+
 
             _backgroundMusic = Content.Load<Song>("Soldier of Heaven");
             MediaPlayer.IsRepeating = true;
