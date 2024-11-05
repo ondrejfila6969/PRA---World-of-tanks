@@ -106,12 +106,38 @@ namespace PRAXE___projekt
         {
             if (IsDestroyed) return;
 
-            spriteBatch.Draw(_bodyTexture, Position, Color.Red);
-            spriteBatch.Draw(_barrelTexture, Position + new Vector2(0, _bodyTexture.Height / 2), Color.DarkGreen);
+            Vector2 tankCenter = Position + new Vector2(_bodyTexture.Width / 2, _bodyTexture.Height / 2);
+
+            spriteBatch.Draw(
+                _bodyTexture,
+                tankCenter,
+                null,
+                Color.Red, 
+                0f, 
+                new Vector2(_bodyTexture.Width / 2, _bodyTexture.Height / 2), 
+                1.0f,
+                SpriteEffects.None,
+                0f
+            );
+
+            spriteBatch.Draw(
+                _barrelTexture,
+                tankCenter,
+                null,
+                Color.White,
+                (float)Math.PI,
+                new Vector2(0, _barrelTexture.Height / 2), 
+                1.0f,
+                SpriteEffects.None,
+                0f
+            );
+
+            // Vykreslení střel nepřátelského tanku
             foreach (var bullet in _bullets)
             {
                 spriteBatch.Draw(_bulletTexture, bullet.Position, Color.White);
             }
         }
+
     }
 }

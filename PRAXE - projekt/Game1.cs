@@ -34,7 +34,7 @@ namespace PRAXE___projekt
         protected override void Initialize()
         {
             _tankPosition = new Vector2(200, 200);
-            _enemyTank = new EnemyTank(new Vector2(600, 200), 3, 100, _bulletSpeed, 50f);
+            _enemyTank = new EnemyTank(new Vector2(600, 200), 1, 100, _bulletSpeed, 50f);
             base.Initialize();
         }
 
@@ -68,18 +68,17 @@ namespace PRAXE___projekt
             var keyboardState = Keyboard.GetState();
             var mouseState = Mouse.GetState();
 
-            // Tank movement
-            if (keyboardState.IsKeyDown(Keys.W))
-                _tankPosition.Y -= _tankSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (keyboardState.IsKeyDown(Keys.S))
-                _tankPosition.Y += _tankSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            // Rotace tanku pomocí kláves A a D
             if (keyboardState.IsKeyDown(Keys.A))
-                _tankPosition.X -= _tankSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                _rotationAngle -= 2f * (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (keyboardState.IsKeyDown(Keys.D))
-                _tankPosition.X += _tankSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                _rotationAngle += 2f * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            Vector2 direction = new Vector2(mouseState.X, mouseState.Y) - (_tankPosition + new Vector2(_tankBodyTexture.Width / 2, _tankBodyTexture.Height / 2));
-            _rotationAngle = (float)Math.Atan2(direction.Y, direction.X);
+            Vector2 movementDirection = new Vector2((float)Math.Cos(_rotationAngle), (float)Math.Sin(_rotationAngle));
+            if (keyboardState.IsKeyDown(Keys.W))
+                _tankPosition += movementDirection * _tankSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (keyboardState.IsKeyDown(Keys.S))
+                _tankPosition -= movementDirection * _tankSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
@@ -87,7 +86,7 @@ namespace PRAXE___projekt
                     (float)Math.Cos(_rotationAngle) * (_tankBodyTexture.Width / 2 + _tankBarrelTexture.Width / 2),
                     (float)Math.Sin(_rotationAngle) * (_tankBodyTexture.Width / 2 + _tankBarrelTexture.Width / 2)
                 );
-                _bullets.Add(new Bullet(barrelEnd, Vector2.Normalize(direction), _rotationAngle));
+                _bullets.Add(new Bullet(barrelEnd, Vector2.Normalize(movementDirection), _rotationAngle));
             }
 
             for (int i = _bullets.Count - 1; i >= 0; i--)
@@ -119,10 +118,33 @@ namespace PRAXE___projekt
             GraphicsDevice.Clear(Color.White);
             _spriteBatch.Begin();
 
-            _spriteBatch.Draw(_tankBodyTexture, _tankPosition, Color.White);
-            Vector2 barrelPosition = _tankPosition + new Vector2(_tankBodyTexture.Width / 2, _tankBodyTexture.Height / 2);
-            _spriteBatch.Draw(_tankBarrelTexture, barrelPosition, null, Color.White, _rotationAngle, new Vector2(0, _tankBarrelTexture.Height / 2), 1.0f, SpriteEffects.None, 0f);
+            Vector2 tankCenter = _tankPosition + new Vector2(_tankBodyTexture.Width / 2, _tankBodyTexture.Height / 2);
 
+            _spriteBatch.Draw(
+                _tankBodyTexture,
+                tankCenter,
+                null,
+                Color.White,
+                _rotationAngle,
+                new Vector2(_tankBodyTexture.Width / 2, _tankBodyTexture.Height / 2),
+                1.0f,
+                SpriteEffects.None,
+                0f
+            );
+
+            _spriteBatch.Draw(
+                _tankBarrelTexture,
+                tankCenter,
+                null,
+                Color.White,
+                _rotationAngle,
+                new Vector2(0, _tankBarrelTexture.Height / 2),
+                1.0f,
+                SpriteEffects.None,
+                0f
+            );
+
+            // Vykreslení všech střel
             foreach (var bullet in _bullets)
             {
                 _spriteBatch.Draw(_bulletTexture, bullet.Position, Color.White);
